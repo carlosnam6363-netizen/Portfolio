@@ -42,7 +42,7 @@
         });
       }
       // 3. 빌드 버전 검사를 통한 자동 1회 새로고침
-      var APP_VER = '20261016_portfolio_v1';
+      var APP_VER = '20261016_portfolio_v2';
       if (localStorage.getItem('portfolio_app_build') !== APP_VER) {
         localStorage.setItem('portfolio_app_build', APP_VER);
         if (!sessionStorage.getItem('build_updated')) {
@@ -94,7 +94,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
   <!-- Custom CSS (Cache-Busted) -->
-  <link rel="stylesheet" href="css/style.css?v=20261016_p1">
+  <link rel="stylesheet" href="css/style.css?v=20261016_p2">
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col lg:flex-row antialiased selection:bg-amber-500 selection:text-slate-950 pb-24 lg:pb-0">
 
@@ -104,14 +104,17 @@
   <aside class="hidden lg:flex flex-col w-64 xl:w-72 border-r border-slate-800 bg-slate-900/70 backdrop-blur-xl h-screen sticky top-0 z-30 p-4 justify-between">
     <div>
       <!-- Brand Logo (Clickable -> Overview Tab) -->
-      <button type="button" onclick="window.app.switchTab('overview')" class="w-full flex items-center gap-3 px-3 py-4 mb-3 border-b border-slate-800/80 hover:bg-slate-800/40 rounded-xl transition cursor-pointer text-left group" title="포트폴리오 종합 대시보드로 이동">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-pink-500 flex items-center justify-center text-slate-950 text-lg shadow-lg shadow-amber-500/20 group-hover:scale-105 group-hover:shadow-amber-500/40 transition">
-          <i class="fa-solid fa-award"></i>
+      <button id="sidebar-brand-overview-btn" type="button" onclick="window.app.switchTab('overview')" class="w-full flex items-center justify-between gap-3 px-3 py-4 mb-3 border-b border-slate-800/80 hover:bg-slate-800/40 rounded-xl transition cursor-pointer text-left group" title="포트폴리오 종합 대시보드로 이동">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-pink-500 flex items-center justify-center text-slate-950 text-lg shadow-lg shadow-amber-500/20 group-hover:scale-105 group-hover:shadow-amber-500/40 transition flex-shrink-0">
+            <i class="fa-solid fa-award"></i>
+          </div>
+          <div class="truncate">
+            <h1 class="font-bold text-sm text-white tracking-wide group-hover:text-amber-300 transition truncate">포트폴리오 대시보드</h1>
+            <p class="text-[11px] text-slate-400 font-mono group-hover:text-slate-300 transition truncate">Portfolio & Branding</p>
+          </div>
         </div>
-        <div>
-          <h1 class="font-bold text-sm text-white tracking-wide group-hover:text-amber-300 transition">포트폴리오 대시보드</h1>
-          <p class="text-[11px] text-slate-400 font-mono group-hover:text-slate-300 transition">Portfolio & Branding</p>
-        </div>
+        <span id="sidebar-brand-home-badge" class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30 flex-shrink-0">HOME</span>
       </button>
 
       <!-- Navigation Header with Tab Order Button -->
@@ -159,7 +162,7 @@
           <i class="fa-solid fa-moon"></i>
           <span>다크 테마</span>
         </button>
-        <span class="text-[10px] text-slate-500 font-mono">Portfolio v2.0</span>
+        <span class="text-[10px] text-slate-500 font-mono">Portfolio v2.1</span>
       </div>
     </div>
   </aside>
@@ -168,13 +171,13 @@
   <!-- Mobile Top Header -->
   <!-- ========================================================================= -->
   <header class="lg:hidden flex items-center justify-between px-4 py-3 bg-slate-900/90 border-b border-slate-800 sticky top-0 z-20 backdrop-blur-md">
-    <button type="button" onclick="window.app.switchTab('overview')" class="flex items-center gap-2.5 hover:opacity-80 transition cursor-pointer text-left" title="포트폴리오 종합 대시보드로 이동">
+    <button id="mobile-brand-overview-btn" type="button" onclick="window.app.switchTab('overview')" class="flex items-center gap-2.5 hover:opacity-80 transition cursor-pointer text-left" title="포트폴리오 종합 대시보드로 이동">
       <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-amber-500 to-pink-500 flex items-center justify-center text-slate-950 text-sm shadow-md">
         <i class="fa-solid fa-award"></i>
       </div>
       <div>
-        <h2 class="font-bold text-xs text-white">포트폴리오 & 브랜딩</h2>
-        <span class="text-[10px] text-slate-400 font-mono">Portfolio Hub</span>
+        <h2 class="font-bold text-xs text-white">포트폴리오 대시보드</h2>
+        <span class="text-[10px] text-slate-400 font-mono">Portfolio & Branding</span>
       </div>
     </button>
     <div class="flex items-center gap-2">
@@ -633,21 +636,15 @@
         </div>
 
         <!-- LinkedIn Section -->
-        <div class="p-4 rounded-2xl bg-slate-800/60 border border-blue-500/30 space-y-3">
+        <div class="p-4 rounded-2xl bg-slate-800/60 border border-blue-500/30 space-y-2.5">
           <div class="flex items-center justify-between text-blue-400 font-bold">
             <span class="flex items-center gap-1.5"><i class="fa-brands fa-linkedin"></i> 링크드인 (김남현)</span>
             <span class="text-[10px] text-blue-300 bg-blue-500/20 px-2 py-0.5 rounded">전문가 네트워크</span>
           </div>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-slate-300 font-medium mb-1">1촌 / 팔로워 (명)</label>
-              <input type="number" id="input-sns-linkedin-followers" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono focus:border-blue-500 outline-none">
-            </div>
-            <div>
-              <label class="block text-slate-300 font-medium mb-1">발행 포스트 (건)</label>
-              <input type="number" id="input-sns-linkedin-posts" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono focus:border-blue-500 outline-none">
-            </div>
-          </div>
+          <a href="https://www.linkedin.com/in/%EB%82%A8%ED%98%84-%EA%B9%80-4a62b5340/" target="_blank" rel="noopener noreferrer" class="w-full py-2 px-3 bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5">
+            <span>링크드인 프로필 바로가기</span>
+            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+          </a>
         </div>
 
         <div class="pt-3 border-t border-slate-800 flex justify-end gap-2.5">
@@ -1014,7 +1011,7 @@
   </div>
 
   <!-- Static Seed Datasets & Core Application Script (Safe for file:// and http://) -->
-  <script src="js/data.js?v=20261004_v3"></script>
-  <script src="js/app.js?v=20261004_v3"></script>
+  <script src="js/data.js?v=20261016_v2"></script>
+  <script src="js/app.js?v=20261016_v2"></script>
 </body>
 </html>

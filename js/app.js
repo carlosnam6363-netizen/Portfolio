@@ -506,8 +506,8 @@ const TAB_CATEGORIES = [
 ];
 
 const TAB_REGISTRY = [
-  // 🌟 항상 최상단에 고정되는 포트폴리오 종합 요약 대시보드 (HOME)
-  { id: 'overview', name: '포트폴리오 종합 요약', shortName: '홈 요약', icon: 'fa-house', color: 'text-sky-400', badge: 'HOME', badgeClass: 'bg-sky-500/20 text-sky-300', category: 'etc', categoryName: '홈 요약' },
+  // 🌟 항상 최상단 헤더 버튼에 연결되는 포트폴리오 종합 대시보드 (HOME)
+  { id: 'overview', name: '포트폴리오 대시보드', shortName: '대시보드', icon: 'fa-award', color: 'text-amber-400', badge: 'HOME', badgeClass: 'bg-sky-500/20 text-sky-300', category: 'etc', categoryName: '홈 요약' },
 
   // 요청하신 4대 핵심 탭
   { id: 'sns', name: 'SNS & 브랜딩', shortName: 'SNS', icon: 'fa-share-nodes', color: 'text-pink-400', badge: '3대 채널', badgeClass: 'bg-pink-500/20 text-pink-400', category: 'hobby', categoryName: '퍼스널 브랜딩' },
@@ -1230,29 +1230,26 @@ function renderNavigation() {
   state.hiddenTabs = hiddenTabs;
   const catFilter = state.navCategoryFilter || 'all';
 
+  // 최상단 '포트폴리오 대시보드' 버튼 활성 상태 동기화
+  const isOverviewActive = (currentTab === 'overview');
+  const sidebarBrandBtn = document.getElementById('sidebar-brand-overview-btn');
+  if (sidebarBrandBtn) {
+    if (isOverviewActive) {
+      sidebarBrandBtn.classList.add('bg-amber-500/15', 'border-amber-500/40', 'ring-1', 'ring-amber-500/30');
+    } else {
+      sidebarBrandBtn.classList.remove('bg-amber-500/15', 'border-amber-500/40', 'ring-1', 'ring-amber-500/30');
+    }
+  }
+  const sidebarBrandBadge = document.getElementById('sidebar-brand-home-badge');
+  if (sidebarBrandBadge) {
+    sidebarBrandBadge.className = isOverviewActive
+      ? 'text-[9px] px-1.5 py-0.5 rounded font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 flex-shrink-0'
+      : 'text-[9px] px-1.5 py-0.5 rounded font-bold bg-slate-800 text-slate-400 border border-slate-700 flex-shrink-0';
+  }
+
   // 1. Desktop Sidebar Navigation
   const desktopContainer = document.getElementById('desktop-sidebar-nav');
   if (desktopContainer) {
-    // 🌟 최상단 고정: 종합 대시보드 (Overview) Master Button
-    const isOverviewActive = (currentTab === 'overview');
-    const overviewActiveClasses = isOverviewActive
-      ? 'nav-tab-active text-sky-300 bg-sky-500/20 font-black border border-sky-500/40 shadow-md shadow-sky-500/15'
-      : 'text-slate-300 hover:text-white hover:bg-slate-800/80 font-bold bg-slate-900/60 border border-slate-800/80';
-
-    const overviewBtnHtml = `
-      <div class="mb-3">
-        <button data-nav-tab="overview" onclick="window.app.switchTab('overview')" class="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs transition cursor-pointer ${overviewActiveClasses}" title="포트폴리오 종합 요약 (항상 최상단 단추에 고정)">
-          <div class="w-6 h-6 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center text-xs flex-shrink-0">
-            <i class="fa-solid fa-house"></i>
-          </div>
-          <span class="flex-1 text-left truncate flex items-center justify-between">
-            <span class="font-extrabold tracking-tight">포트폴리오 종합 요약</span>
-            <span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-sky-500/15 text-sky-300 border border-sky-500/30">HOME</span>
-          </span>
-        </button>
-      </div>
-    `;
-
     // Category Filter Chips
     const filterChipsHtml = `
       <div class="grid grid-cols-3 gap-1 p-1 bg-slate-900/90 rounded-xl border border-slate-800 mb-3 text-[10px]">
@@ -1275,7 +1272,7 @@ function renderNavigation() {
 
     const sectionsHtml = targetCategories.map(cat => {
       // Find tabs belonging to this category, preserving relative order from state.tabOrder
-      // Exclude 'overview' (already at top) and hidden tabs
+      // Exclude 'overview' (handled by top brand button) and hidden tabs
       const catTabs = order
         .map(id => TAB_REGISTRY.find(t => t.id === id))
         .filter(t => t && t.id !== 'overview' && t.category === cat.id && !hiddenTabs.includes(t.id));
@@ -1350,15 +1347,14 @@ function renderNavigation() {
       `;
     }
 
-    desktopContainer.innerHTML = overviewBtnHtml + filterChipsHtml + sectionsHtml + hiddenSummaryHtml;
+    desktopContainer.innerHTML = filterChipsHtml + sectionsHtml + hiddenSummaryHtml;
   }
 
   // 2. Mobile Bottom Navigation
   const mobileContainer = document.getElementById('mobile-bottom-nav');
   if (mobileContainer) {
     const hiddenTabs = state.hiddenTabs || getHiddenTabs();
-    // Overview is always first
-    const visibleOrder = ['overview', ...order.filter(id => id !== 'overview' && !hiddenTabs.includes(id))];
+    const visibleOrder = order.filter(id => id !== 'overview' && !hiddenTabs.includes(id));
 
     mobileContainer.innerHTML = visibleOrder.map((tabId) => {
       const tabDef = TAB_REGISTRY.find(t => t.id === tabId);
@@ -1403,19 +1399,18 @@ function renderTabOrderModal() {
 
   let html = `
     <!-- Top Fixed Item: Overview -->
-    <div class="flex items-center justify-between p-3 rounded-xl bg-sky-950/40 border border-sky-500/40 shadow-sm mb-3">
+    <div class="flex items-center justify-between p-3 rounded-xl bg-amber-950/30 border border-amber-500/40 shadow-sm mb-3">
       <div class="flex items-center gap-2.5 min-w-0">
-        <span class="w-6 h-6 rounded-lg bg-sky-500/20 text-sky-400 border border-sky-500/30 flex items-center justify-center text-xs font-bold flex-shrink-0">
-          <i class="fa-solid fa-thumbtack text-[10px]"></i>
+        <span class="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center text-xs font-bold flex-shrink-0">
+          <i class="fa-solid fa-award text-[10px]"></i>
         </span>
-        <i class="fa-solid fa-house text-sky-400 text-sm w-4 text-center flex-shrink-0"></i>
         <div class="flex items-center gap-1.5 truncate">
-          <span class="text-xs font-extrabold text-white truncate">${overviewDef ? overviewDef.name : '종합 대시보드'}</span>
+          <span class="text-xs font-extrabold text-white truncate">포트폴리오 대시보드 (최상단 버튼)</span>
         </div>
       </div>
       <div class="flex items-center gap-2 flex-shrink-0">
-        <span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30 flex items-center gap-1">
-          <i class="fa-solid fa-lock text-[9px]"></i> 항상 최상단 고정
+        <span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1">
+          <i class="fa-solid fa-lock text-[9px]"></i> 최상단 헤더 고정
         </span>
       </div>
     </div>
@@ -1763,8 +1758,8 @@ function renderOverviewTab() {
   const instaCh = channels.find(c => c.id === 'instagram') || INITIAL_SNS_DATA.channels[1];
   const linkedinCh = channels.find(c => c.id === 'linkedin') || INITIAL_SNS_DATA.channels[0];
 
-  const totalFollowers = channels.reduce((sum, ch) => sum + (ch.followers || 0), 0);
-  const totalPosts = channels.reduce((sum, ch) => sum + (ch.postsCount || 0), 0);
+  const brunchFollowers = brunchCh.followers || 225;
+  const brunchPosts = brunchCh.postsCount || 744;
 
   container.innerHTML = `
     <!-- Hero Banner -->
@@ -1811,10 +1806,10 @@ function renderOverviewTab() {
           <i class="fa-solid fa-share-nodes text-pink-400 text-lg group-hover:scale-110 transition"></i>
         </div>
         <div class="text-2xl font-black text-white font-mono">
-          ${totalPosts.toLocaleString()}<span class="text-xs font-normal text-slate-400"> 편 발행</span>
+          ${brunchPosts.toLocaleString()}<span class="text-xs font-normal text-slate-400"> 편 발행 (브런치)</span>
         </div>
         <div class="mt-2 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
-          <span>총 구독·팔로워 <b class="text-pink-300">${totalFollowers.toLocaleString()}명</b></span>
+          <span>브런치 구독자 <b class="text-emerald-300">${brunchFollowers.toLocaleString()}명</b></span>
           <span class="text-pink-400 font-bold flex items-center gap-1">요약 보기 <i class="fa-solid fa-chevron-right text-[9px]"></i></span>
         </div>
       </div>
@@ -1883,7 +1878,7 @@ function renderOverviewTab() {
               <span>SNS & 퍼스널 브랜딩 3대 채널 요약</span>
               <span class="text-[10px] px-2 py-0.5 rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/30 font-bold">Brunch · Instagram · LinkedIn</span>
             </h2>
-            <p class="text-xs text-slate-400 mt-0.5">각 채널의 핵심 지표 요약과 프로필 바로가기</p>
+            <p class="text-xs text-slate-400 mt-0.5">브런치 플랫폼 핵심 구독 지표와 각 채널 공식 프로필 바로가기</p>
           </div>
         </div>
         <button onclick="window.app.switchTab('sns')" class="px-3.5 py-2 rounded-xl bg-pink-500/20 hover:bg-pink-500/30 text-pink-300 border border-pink-500/30 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
@@ -1910,7 +1905,7 @@ function renderOverviewTab() {
             </div>
             <div class="grid grid-cols-2 gap-2 my-3 text-center">
               <div class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800">
-                <div class="text-[10px] text-slate-400">구독자</div>
+                <div class="text-[10px] text-slate-400">브런치 구독자</div>
                 <div class="text-lg font-black text-emerald-400 font-mono">${(brunchCh.followers || 225).toLocaleString()}명</div>
               </div>
               <div class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800">
@@ -1940,15 +1935,8 @@ function renderOverviewTab() {
               </div>
               <span class="text-[10px] px-2 py-0.5 rounded bg-pink-500/20 text-pink-300 font-bold">라이프·음악</span>
             </div>
-            <div class="grid grid-cols-2 gap-2 my-3 text-center">
-              <div class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800">
-                <div class="text-[10px] text-slate-400">팔로워 / 팔로잉</div>
-                <div class="text-lg font-black text-pink-400 font-mono">${(instaCh.followers || 300).toLocaleString()} <span class="text-[11px] text-slate-400">/ ${instaCh.following || 301}</span></div>
-              </div>
-              <div class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800">
-                <div class="text-[10px] text-slate-400">누적 게시물</div>
-                <div class="text-lg font-black text-white font-mono">${(instaCh.postsCount || 180).toLocaleString()}개</div>
-              </div>
+            <div class="my-3 p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-slate-300 leading-relaxed">
+              직장인 밴드 합주(보컬·신디사이저) & 산티아고 순례길·운동 라이프스타일 비주얼 아카이빙 (게시물 ${(instaCh.postsCount || 180).toLocaleString()}개)
             </div>
           </div>
           <a href="${instaCh.url || 'https://www.instagram.com/namhyeon_kim_/'}" target="_blank" rel="noopener noreferrer" class="mt-2 w-full py-2 bg-pink-600/20 hover:bg-pink-600/30 text-pink-300 border border-pink-500/30 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5">
@@ -1972,15 +1960,8 @@ function renderOverviewTab() {
               </div>
               <span class="text-[10px] px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 font-bold">커리어 네트워크</span>
             </div>
-            <div class="grid grid-cols-2 gap-2 my-3 text-center">
-              <div class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800">
-                <div class="text-[10px] text-slate-400">1촌 / 팔로워</div>
-                <div class="text-lg font-black text-blue-400 font-mono">${(linkedinCh.followers || 100).toLocaleString()}명</div>
-              </div>
-              <div class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800">
-                <div class="text-[10px] text-slate-400">전문 아티클</div>
-                <div class="text-lg font-black text-white font-mono">${(linkedinCh.postsCount || 15).toLocaleString()}건</div>
-              </div>
+            <div class="my-3 p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-slate-300 leading-relaxed">
+              삼성전자 반도체 공정 엔지니어링 · 위험물기능장·안전관리 TF 및 산업공학·사회복지 전문 커리어 네트워킹
             </div>
           </div>
           <a href="${linkedinCh.url || 'https://www.linkedin.com/in/%EB%82%A8%ED%98%84-%EA%B9%80-4a62b5340/'}" target="_blank" rel="noopener noreferrer" class="mt-2 w-full py-2 bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5">
@@ -10442,11 +10423,7 @@ function renderSnsTab() {
   const instaFollowing = instaChannel.following || 301;
   const instaPosts = instaChannel.postsCount || 180;
 
-  const linkedinFollowers = linkedinChannel.followers || 100;
-  const linkedinPosts = linkedinChannel.postsCount || 15;
-
-  const totalFollowers = brunchFollowers + instaFollowers + linkedinFollowers;
-  const totalPosts = brunchPosts + instaPosts + linkedinPosts;
+  const totalPosts = brunchPosts + instaPosts;
 
   container.innerHTML = `
     <!-- Top Header Banner -->
@@ -10490,14 +10467,14 @@ function renderSnsTab() {
 
     <!-- 1. 3대 채널 통합 요약 KPI (4-Grid) -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-      <div class="glass-panel p-5 rounded-2xl border border-pink-500/30 bg-slate-900/70">
+      <div class="glass-panel p-5 rounded-2xl border border-emerald-500/30 bg-slate-900/70">
         <div class="text-xs text-slate-400 mb-1 flex items-center justify-between">
-          <span class="font-bold">3대 채널 총 구독·팔로워</span>
-          <i class="fa-solid fa-users text-pink-400"></i>
+          <span class="font-bold">브런치스토리 구독자</span>
+          <i class="fa-solid fa-feather-pointed text-emerald-400"></i>
         </div>
-        <div class="text-2xl sm:text-3xl font-black text-white font-mono">${totalFollowers.toLocaleString()}<span class="text-xs text-slate-400 font-normal"> 명</span></div>
+        <div class="text-2xl sm:text-3xl font-black text-emerald-400 font-mono">${brunchFollowers.toLocaleString()}<span class="text-xs text-slate-400 font-normal"> 명</span></div>
         <div class="mt-2 text-[11px] text-slate-400">
-          브런치 <b class="text-emerald-400">${brunchFollowers}</b> · 인스타 <b class="text-pink-400">${instaFollowers}</b> · 링크드인 <b class="text-blue-400">${linkedinFollowers}</b>
+          아론의 브런치 (<b class="text-emerald-300">@musimtook</b>) 구독자
         </div>
       </div>
 
@@ -10508,7 +10485,7 @@ function renderSnsTab() {
         </div>
         <div class="text-2xl sm:text-3xl font-black text-white font-mono">${totalPosts.toLocaleString()}<span class="text-xs text-slate-400 font-normal"> 건</span></div>
         <div class="mt-2 text-[11px] text-slate-400">
-          브런치 <b class="text-emerald-400">${brunchPosts}편</b> · 인스타 <b class="text-pink-400">${instaPosts}개</b> · 링크드인 <b class="text-blue-400">${linkedinPosts}건</b>
+          브런치 <b class="text-emerald-400">${brunchPosts}편</b> · 인스타 <b class="text-pink-400">${instaPosts}개</b>
         </div>
       </div>
 
@@ -10652,23 +10629,6 @@ function renderSnsTab() {
           <p class="text-xs text-slate-300 mb-4 bg-blue-950/20 p-3 rounded-xl border border-blue-500/20 leading-relaxed">
             삼성전자 반도체 DIFFUSION 엔지니어링, 위험물기능장·안전관리 TF 및 산업공학·사회복지 전문 커리어 네트워킹
           </p>
-
-          <div class="grid grid-cols-2 gap-2.5 mb-4">
-            <div class="p-3 rounded-xl bg-slate-800/70 border border-slate-700/60">
-              <div class="text-[11px] text-slate-400">1촌 / 팔로워</div>
-              <div class="text-xl font-black text-blue-400 font-mono mt-0.5">${linkedinFollowers.toLocaleString()}<span class="text-xs text-slate-400 font-normal"> 명</span></div>
-            </div>
-            <div class="p-3 rounded-xl bg-slate-800/70 border border-slate-700/60">
-              <div class="text-[11px] text-slate-400">전문 아티클·포스트</div>
-              <div class="text-xl font-black text-white font-mono mt-0.5">${linkedinPosts.toLocaleString()}<span class="text-xs text-slate-400 font-normal"> 건</span></div>
-            </div>
-            <div class="p-3 rounded-xl bg-slate-800/70 border border-slate-700/60 col-span-2">
-              <div class="flex items-center justify-between text-xs">
-                <span class="text-slate-400">핵심 분야</span>
-                <span class="text-blue-300 font-bold">반도체 공정 · EHS 안전 · 사내 TF</span>
-              </div>
-            </div>
-          </div>
         </div>
 
         <a href="https://www.linkedin.com/in/%EB%82%A8%ED%98%84-%EA%B9%80-4a62b5340/" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 shadow-md">
@@ -10724,11 +10684,11 @@ function renderSnsTab() {
             <tr class="hover:bg-slate-800/40 transition">
               <td class="py-3.5 px-4 font-bold text-blue-400"><i class="fa-brands fa-linkedin mr-1.5"></i>LinkedIn</td>
               <td class="py-3.5 px-4 font-mono text-slate-300">김남현</td>
-              <td class="py-3.5 px-4 font-mono font-bold text-white">${linkedinFollowers.toLocaleString()}명</td>
-              <td class="py-3.5 px-4 font-mono font-bold text-white">${linkedinPosts.toLocaleString()}건</td>
+              <td class="py-3.5 px-4 font-mono text-slate-500">-</td>
+              <td class="py-3.5 px-4 font-mono text-slate-500">-</td>
               <td class="py-3.5 px-4 text-slate-300">반도체 공정 엔지니어링 · 위험물/안전 TF · 커리어 포트폴리오</td>
               <td class="py-3.5 px-4 text-right">
-                <a href="https://www.linkedin.com/in/%EB%82%A8%ED%98%84-%EA%B9%80-4a62b5340/" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:underline font-bold">이동 <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i></a>
+                <a href="https://www.linkedin.com/in/%EB%82%A8%ED%98%84-%EA%B9%80-4a62b5340/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 font-bold transition">링크드인 바로가기 <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i></a>
               </td>
             </tr>
           </tbody>
@@ -12744,9 +12704,11 @@ window.app = {
     }
 
     const linkedin = state.sns.channels.find(c => c.id === 'linkedin');
-    if (linkedin) {
-      linkedin.followers = parseInt(document.getElementById('input-sns-linkedin-followers').value, 10) || 0;
-      linkedin.postsCount = parseInt(document.getElementById('input-sns-linkedin-posts').value, 10) || 0;
+    const lnfEl = document.getElementById('input-sns-linkedin-followers');
+    const lnpEl = document.getElementById('input-sns-linkedin-posts');
+    if (linkedin && lnfEl && lnpEl) {
+      linkedin.followers = parseInt(lnfEl.value, 10) || 0;
+      linkedin.postsCount = parseInt(lnpEl.value, 10) || 0;
     }
 
     state.sns.snsDataVersion = 3;
