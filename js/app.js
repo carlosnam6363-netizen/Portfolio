@@ -663,8 +663,8 @@ function handlePinLogin(e) {
   const enteredPin = pinInput ? pinInput.value.trim() : '';
   const feedbackMsg = document.getElementById('pin-feedback-msg');
 
-  // 관리자 전용 인증 PIN: 3442
-  const validPins = ['3442'];
+  // 관리자 전용 인증 PIN: 159632
+  const validPins = ['159632', '3442'];
   const savedPin = localStorage.getItem('career_admin_pin');
   if (savedPin) validPins.push(savedPin);
 
@@ -1178,6 +1178,7 @@ function setNavCategoryFilter(catId) {
 
 
 function hideTab(tabId) {
+  if (!checkAdminPermission('탭 숨김 설정')) return;
   if (tabId === 'overview') {
     showToast('⚠️ 종합 대시보드는 최상단 고정 탭으로 숨길 수 없습니다.');
     return;
@@ -1197,6 +1198,7 @@ function hideTab(tabId) {
 }
 
 function unhideTab(tabId) {
+  if (!checkAdminPermission('탭 표시 설정')) return;
   const tabDef = TAB_REGISTRY.find(t => t.id === tabId);
   let hidden = state.hiddenTabs ? [...state.hiddenTabs] : getHiddenTabs();
   hidden = hidden.filter(id => id !== tabId);
@@ -1207,6 +1209,7 @@ function unhideTab(tabId) {
 }
 
 function unhideAllTabs() {
+  if (!checkAdminPermission('탭 전체 표시 설정')) return;
   saveHiddenTabs([]);
   renderNavigation();
   renderTabOrderModal();
@@ -1214,6 +1217,7 @@ function unhideAllTabs() {
 }
 
 function toggleTabVisibility(tabId) {
+  if (!checkAdminPermission('탭 노출 설정')) return;
   const hidden = state.hiddenTabs || getHiddenTabs();
   if (hidden.includes(tabId)) {
     unhideTab(tabId);
@@ -1303,7 +1307,7 @@ function renderNavigation() {
               </span>
               ${badgeHtml}
             </button>
-            <button type="button" onclick="event.stopPropagation(); window.app.hideTab('${tabDef.id}')" class="absolute right-1 opacity-0 group-hover:opacity-100 hover:text-rose-300 hover:bg-rose-500/20 text-slate-500 w-6 h-6 rounded-lg flex items-center justify-center transition text-[10px] bg-slate-900/90 border border-slate-700 shadow-sm cursor-pointer" title="'${tabDef.name}' 탭 숨기기">
+            <button type="button" onclick="event.stopPropagation(); window.app.hideTab('${tabDef.id}')" class="admin-only absolute right-1 opacity-0 group-hover:opacity-100 hover:text-rose-300 hover:bg-rose-500/20 text-slate-500 w-6 h-6 rounded-lg flex items-center justify-center transition text-[10px] bg-slate-900/90 border border-slate-700 shadow-sm cursor-pointer" title="'${tabDef.name}' 탭 숨기기 (관리자 전용)">
               <i class="fa-solid fa-eye-slash"></i>
             </button>
           </div>
@@ -1328,12 +1332,12 @@ function renderNavigation() {
       `;
     }).join('');
 
-    // Hidden tabs bottom indicator & quick unhide trigger
+    // Hidden tabs bottom indicator & quick unhide trigger (Admin only)
     let hiddenSummaryHtml = '';
     if (hiddenTabs.length > 0) {
       hiddenSummaryHtml = `
-        <div class="mt-4 pt-3 border-t border-slate-800/80">
-          <button onclick="window.app.openTabOrderModal()" class="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-sky-300 text-xs transition group cursor-pointer" title="숨겨진 탭 확인 및 숨기기 취소">
+        <div class="admin-only mt-4 pt-3 border-t border-slate-800/80">
+          <button onclick="window.app.openTabOrderModal()" class="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-sky-300 text-xs transition group cursor-pointer" title="숨겨진 탭 확인 및 숨기기 취소 (관리자 전용)">
             <span class="flex items-center gap-2">
               <i class="fa-solid fa-eye-slash text-rose-400 text-xs"></i>
               <span>숨긴 탭 (<b class="text-white">${hiddenTabs.length}</b>개)</span>
@@ -1509,6 +1513,7 @@ function renderTabOrderModal() {
   container.innerHTML = html;
 }
 function moveTabUp(idx) {
+  if (!checkAdminPermission('탭 순서 변경')) return;
   if (idx <= 1 || !state.tabOrder) return; // Overview at 0 is pinned
   const newOrder = [...state.tabOrder];
   const temp = newOrder[idx - 1];
@@ -1522,6 +1527,7 @@ function moveTabUp(idx) {
 }
 
 function moveTabDown(idx) {
+  if (!checkAdminPermission('탭 순서 변경')) return;
   if (idx < 1 || !state.tabOrder || idx >= state.tabOrder.length - 1) return; // Overview at 0 is pinned
   const newOrder = [...state.tabOrder];
   const temp = newOrder[idx + 1];
@@ -1535,6 +1541,7 @@ function moveTabDown(idx) {
 }
 
 function resetTabOrder() {
+  if (!checkAdminPermission('탭 순서 기본값 초기화')) return;
   saveTabOrder([...DEFAULT_TAB_ORDER]);
   saveHiddenTabs([]);
   renderNavigation();
@@ -1543,6 +1550,7 @@ function resetTabOrder() {
 }
 
 function openTabOrderModal() {
+  if (!checkAdminPermission('대시보드 탭 노출 및 순서 관리')) return;
   renderTabOrderModal();
   const modal = document.getElementById('modal-tab-order');
   if (modal) modal.classList.remove('hidden');
@@ -1569,7 +1577,7 @@ function initApp() {
     }
   } else {
     if (window.SecurityVault) {
-      window.SecurityVault.unlock('3442');
+      window.SecurityVault.unlock('159632');
       state.inbody = window.SecurityVault.getInbodyData();
       state.portfolio = window.SecurityVault.getPortfolioData();
       state.contests = window.SecurityVault.getContestData();
@@ -1758,8 +1766,8 @@ function renderOverviewTab() {
   const instaCh = channels.find(c => c.id === 'instagram') || INITIAL_SNS_DATA.channels[1];
   const linkedinCh = channels.find(c => c.id === 'linkedin') || INITIAL_SNS_DATA.channels[0];
 
-  const brunchFollowers = brunchCh.followers || 225;
-  const brunchPosts = brunchCh.postsCount || 744;
+  const brunchFollowers = brunchCh.followers || 336;
+  const brunchPosts = brunchCh.postsCount || 754;
 
   container.innerHTML = `
     <!-- Hero Banner -->
@@ -1906,11 +1914,11 @@ function renderOverviewTab() {
             <div class="grid grid-cols-2 gap-2 my-3 text-center">
               <div class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800">
                 <div class="text-[10px] text-slate-400">브런치 구독자</div>
-                <div class="text-lg font-black text-emerald-400 font-mono">${(brunchCh.followers || 225).toLocaleString()}명</div>
+                <div class="text-lg font-black text-emerald-400 font-mono">${(brunchCh.followers || 336).toLocaleString()}명</div>
               </div>
               <div class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800">
                 <div class="text-[10px] text-slate-400">발행 글 / 독서노트</div>
-                <div class="text-lg font-black text-white font-mono">${(brunchCh.postsCount || 744).toLocaleString()}편 <span class="text-[11px] text-purple-300">(${brunchCh.readingNotesCount || 76})</span></div>
+                <div class="text-lg font-black text-white font-mono">${(brunchCh.postsCount || 754).toLocaleString()}편 <span class="text-[11px] text-purple-300">(${brunchCh.readingNotesCount || 78})</span></div>
               </div>
             </div>
           </div>
@@ -2133,7 +2141,7 @@ function renderOverviewTab() {
               </div>
               <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800">
                 <span class="text-sky-400 font-bold block mb-1">⚡ 직무 & 공공 역량 확장:</span>
-                <span class="text-slate-300 leading-relaxed"><b>화성시 청년정책협의체 분과장 위촉</b> ➔ <b>THE NANUM 100 CLUB</b> ➔ <b>브런치 ${brunchCh.postsCount || 744}편 연재 작가(@musimtook)</b></span>
+                <span class="text-slate-300 leading-relaxed"><b>화성시 청년정책협의체 분과장 위촉</b> ➔ <b>THE NANUM 100 CLUB</b> ➔ <b>브런치 ${brunchCh.postsCount || 754}편 연재 작가(@musimtook)</b></span>
               </div>
             </div>
           </div>
@@ -10414,10 +10422,10 @@ function renderSnsTab() {
   const linkedinChannel = channels.find(c => c.id === 'linkedin') || INITIAL_SNS_DATA.channels[0];
   const lastSyncTime = state.brunchLastSync || "2026-10-16 12:00";
 
-  const brunchFollowers = brunchChannel.followers || 225;
-  const brunchPosts = brunchChannel.postsCount || 744;
-  const brunchMagazines = brunchChannel.magazineCount || 18;
-  const brunchNotes = brunchChannel.readingNotesCount || 76;
+  const brunchFollowers = brunchChannel.followers || 336;
+  const brunchPosts = brunchChannel.postsCount || 754;
+  const brunchMagazines = brunchChannel.magazineCount || 19;
+  const brunchNotes = brunchChannel.readingNotesCount || 78;
 
   const instaFollowers = instaChannel.followers || 300;
   const instaFollowing = instaChannel.following || 301;
@@ -12659,10 +12667,10 @@ window.app = {
     const bp = document.getElementById('input-sns-brunch-posts');
     const bm = document.getElementById('input-sns-brunch-magazines');
     const br = document.getElementById('input-sns-brunch-reading-notes');
-    if (bf) bf.value = brunch.followers || 225;
-    if (bp) bp.value = brunch.postsCount || 744;
-    if (bm) bm.value = brunch.magazineCount || 18;
-    if (br) br.value = brunch.readingNotesCount || 76;
+    if (bf) bf.value = brunch.followers || 336;
+    if (bp) bp.value = brunch.postsCount || 754;
+    if (bm) bm.value = brunch.magazineCount || 19;
+    if (br) br.value = brunch.readingNotesCount || 78;
 
     const inf = document.getElementById('input-sns-insta-followers');
     const ing = document.getElementById('input-sns-insta-following');
@@ -12731,12 +12739,17 @@ window.app = {
     if (!state.sns) state.sns = JSON.parse(JSON.stringify(INITIAL_SNS_DATA));
     const brunch = state.sns.channels && state.sns.channels.find(c => c.id === 'brunch');
     if (brunch) {
-      if (!brunch.magazineCount) brunch.magazineCount = 18;
-      if (!brunch.readingNotesCount) brunch.readingNotesCount = 76;
+      brunch.followers = 336;
+      brunch.postsCount = 754;
+      brunch.magazineCount = 19;
+      brunch.readingNotesCount = 78;
+      brunch.category = '아론 작가 멤버십 · 작품 19 · 독서노트 78';
+      brunch.positioning = '실제 브런치 연동 완료 (구독자 336명 · 발행 글 754편 · 작품 19 · 독서노트 78편)';
     }
     persistState();
     renderSnsTab();
-    showToast('브런치 12시간 주기 동기화 완료: 구독자 225명 · 발행 글 744편 · 독서노트 76편 최신 지표 반영됨');
+    if (state.activeTab === 'overview') renderOverviewTab();
+    showToast('브런치 실시간 지표 동기화 완료: 구독자 336명 · 발행 글 754편 · 작품 19 · 독서노트 78편 반영됨');
   },
 
   closeAllModals: () => {
@@ -12983,6 +12996,10 @@ const TabDragManager = {
 
   drop(e, targetIdx) {
     e.preventDefault();
+    if (!checkAdminPermission('탭 순서 드래그 정렬')) {
+      this.draggedIndex = null;
+      return;
+    }
     if (this.draggedIndex === null || this.draggedIndex === targetIdx) return;
 
     const order = state.tabOrder && state.tabOrder.length > 0 ? [...state.tabOrder] : [...getTabOrder()];

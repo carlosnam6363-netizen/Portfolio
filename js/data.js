@@ -1767,16 +1767,16 @@ const INITIAL_SNS_DATA = {
       themeColor: "emerald",
       badgeClass: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
       btnClass: "bg-emerald-600 hover:bg-emerald-700 text-white",
-      category: "아론 작가 멤버십 · 작품 18 · 독서노트 76",
-      followers: 225,
+      category: "아론 작가 멤버십 · 작품 19 · 독서노트 78",
+      followers: 336,
       targetFollowers: 500,
-      postsCount: 744,
-      magazineCount: 18,
-      readingNotesCount: 76,
+      postsCount: 754,
+      magazineCount: 19,
+      readingNotesCount: 78,
       weeklyGoal: "글쓰듯 말하고 싶습니다. 당신의 마음에 닿기를 바라며 연재",
       engagementRate: "9.2%",
       monthlyViews: 4500,
-      positioning: "실제 브런치 라이브 연동 완료 (구독자 225명 · 발행 글 744편 · 브런치북 18개 · 독서노트 76편)",
+      positioning: "실제 브런치 라이브 연동 완료 (구독자 336명 · 발행 글 754편 · 브런치북 19개 · 독서노트 78편)",
       hashtags: "#아론의브런치 #브런치작가멤버십 #에세이스트 #독서노트 #산티아고순례길",
       memo: "삼성전자 학생·회사원·에세이스트 '아론' | 국회국방위원장상 & 화성시 산문 장려상 수상 작가 아카이브"
     }
@@ -1785,13 +1785,13 @@ const INITIAL_SNS_DATA = {
     {
       id: "sns-post-1",
       platform: "brunch",
-      title: "[아론의 브런치] 744편의 에세이와 76편의 독서노트 연재 아카이브",
+      title: "[아론의 브런치] 754편의 에세이와 78편의 독서노트 연재 아카이브",
       status: "published",
       date: "2026-09-28",
       url: "https://brunch.co.kr/@musimtook",
       views: 1450,
       likes: 68,
-      notes: "구독자 225명 · 작품 18개 · 독서노트 76편 · 아론 작가 멤버십 활발 운영 중"
+      notes: "구독자 336명 · 작품 19개 · 독서노트 78편 · 아론 작가 멤버십 활발 운영 중"
     },
     {
       id: "sns-post-2",
@@ -1816,7 +1816,7 @@ const INITIAL_SNS_DATA = {
       notes: "삼성전자 안전/인사/보안 TF 경험 및 5대 기술자격 취득 노하우와 연계한 전문가 브랜딩"
     }
   ],
-  strategyMemo: "3대 채널 원소스 멀티유즈(OSMU) 운영 전략:\n1) 브런치스토리 (@musimtook · 구독자 225명 / 글 744편 / 독서노트 76편): 실패의 기록과 나만의 사색 에세이 연재\n2) 인스타그램 (@namhyeon_kim_ · 팔로워 300명 / 게시물 180개): 밴드 합주(보컬·신디사이저), 11월 산티아고 순례길 사진 & 숏폼 릴스\n3) 링크드인 (김남현): 삼성전자 TF 경험, 안전·에너지 기술자격, 화성시 청년정책협의체 분과장 인사이트 공유"
+  strategyMemo: "3대 채널 원소스 멀티유즈(OSMU) 운영 전략:\n1) 브런치스토리 (@musimtook · 구독자 336명 / 글 754편 / 독서노트 78편): 실패의 기록과 나만의 사색 에세이 연재\n2) 인스타그램 (@namhyeon_kim_ · 팔로워 300명 / 게시물 180개): 밴드 합주(보컬·신디사이저), 11월 산티아고 순례길 사진 & 숏폼 릴스\n3) 링크드인 (김남현): 삼성전자 TF 경험, 안전·에너지 기술자격, 화성시 청년정책협의체 분과장 인사이트 공유"
 };
 
 const INITIAL_PORTFOLIO_DATA = {
@@ -13281,7 +13281,7 @@ const SecurityVault = {
   isUnlocked: () => _isVaultUnlocked,
 
   unlock(authKey) {
-    const validKeys = ['3442', '2232', 'carlosnam6363@gmail.com', 'admin_carlosnam'];
+    const validKeys = ['159632', '3442', '2232', 'carlosnam6363@gmail.com', 'admin_carlosnam'];
     if (!authKey || !validKeys.includes(String(authKey).trim().toLowerCase())) {
       return false;
     }

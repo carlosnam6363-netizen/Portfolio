@@ -42,7 +42,7 @@
         });
       }
       // 3. 빌드 버전 검사를 통한 자동 1회 새로고침
-      var APP_VER = '20261016_portfolio_v2';
+      var APP_VER = '20261016_portfolio_v3';
       if (localStorage.getItem('portfolio_app_build') !== APP_VER) {
         localStorage.setItem('portfolio_app_build', APP_VER);
         if (!sessionStorage.getItem('build_updated')) {
@@ -125,7 +125,7 @@
             <i class="fa-solid fa-cloud-arrow-down text-[10px]"></i>
             <span>백업</span>
           </button>
-          <button onclick="window.app.openTabOrderModal()" class="text-[11px] text-amber-400 hover:text-amber-300 flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-amber-500/10 border border-amber-500/20 transition font-medium cursor-pointer" title="탭 숨기기 및 순서 설정">
+          <button onclick="window.app.openTabOrderModal()" class="admin-only text-[11px] text-amber-400 hover:text-amber-300 flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-amber-500/10 border border-amber-500/20 transition font-medium cursor-pointer" title="탭 숨기기 및 순서 설정 (관리자 전용)">
             <i class="fa-solid fa-sliders text-[10px]"></i>
             <span>설정</span>
           </button>
@@ -189,7 +189,7 @@
         <i class="fa-solid fa-cloud-arrow-down text-[10px]"></i>
         <span class="text-[11px]">백업</span>
       </button>
-      <button onclick="window.app.openTabOrderModal()" class="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-lg flex items-center gap-1 hover:bg-amber-500/20 transition font-bold cursor-pointer" title="탭 노출·숨김 관리">
+      <button onclick="window.app.openTabOrderModal()" class="admin-only text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-lg flex items-center gap-1 hover:bg-amber-500/20 transition font-bold cursor-pointer" title="탭 노출·숨김 관리 (관리자 전용)">
         <i class="fa-solid fa-sliders text-[10px]"></i>
         <span class="text-[11px]">설정</span>
       </button>
@@ -321,12 +321,13 @@
           </button>
         </div>
 
-        <!-- 2. Import Section -->
-        <div class="p-4 rounded-2xl bg-slate-800/70 border border-sky-500/30 space-y-3">
+        <!-- 2. Import Section (Admin Only) -->
+        <div class="admin-only p-4 rounded-2xl bg-slate-800/70 border border-sky-500/30 space-y-3">
           <div class="flex items-center justify-between text-sky-400 font-bold">
             <span class="flex items-center gap-1.5 text-sm">
               <i class="fa-solid fa-file-import"></i> 백업 파일 복원 (JSON 가져오기)
             </span>
+            <span class="text-[10px] text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded">관리자 전용</span>
           </div>
           <p class="text-slate-300 leading-relaxed">
             이전에 다운로드한 백업 JSON 파일을 선택하여 대시보드 상태를 즉시 복원합니다.
@@ -1011,7 +1012,7 @@
   </div>
 
   <!-- Static Seed Datasets & Core Application Script (Safe for file:// and http://) -->
-  <script src="js/data.js?v=20261016_v2"></script>
-  <script src="js/app.js?v=20261016_v2"></script>
+  <script src="js/data.js?v=20261016_v3"></script>
+  <script src="js/app.js?v=20261016_v3"></script>
 </body>
 </html>
